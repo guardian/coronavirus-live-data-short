@@ -261,11 +261,23 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus) {
 
 };
 
+// Promise.all([
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed.json'),
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily.json'),
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths.json'),
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered.json'),
+// 	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json')
+// ])
+// .then((results) =>  {
+// 	init('Total', results[0], results[1], results[2], results[3], results[4])
+// })
+
+
 Promise.all([
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed.json'),
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily.json'),
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths.json'),
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_preview.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily_preview.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths_preview.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered_preview.json'),
 	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json')
 ])
 .then((results) =>  {
