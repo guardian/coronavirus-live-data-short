@@ -58,7 +58,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus) {
 
 	var timeFormat = d3.timeFormat('%Y-%m-%d')
 	var timeParse = d3.timeParse('%d/%m/%Y')
-	var ausManualTimestamp = timeFormat(timeParse(aus.sheets['latest totals'][8]['Last updated']))
+	var ausManualTimestamp = aus.sheets['latest totals'][8]['Last updated']
 	var autoTimestamp = confirmed[confirmed.length-1]['index']
 
 	var ausFinalDeaths,ausFinalConfirmed
