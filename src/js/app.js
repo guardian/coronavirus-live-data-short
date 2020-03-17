@@ -2,13 +2,13 @@ import template from '../templates/template.html'
 import Ractive from 'ractive'
 import * as d3 from "d3"
 
-function init(country, confirmed, confirmed_daily, deaths, recovered, aus) {
+function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overrides) {
 
-	console.log(confirmed)
-	console.log(confirmed_daily)
-	console.log(deaths)
-	console.log(recovered)
-	console.log(aus)
+	// console.log(confirmed)
+	// console.log(confirmed_daily)
+	// console.log(deaths)
+	// console.log(recovered)
+	// console.log(aus)
 
 	var data = {
 		"Australia":{},
@@ -49,6 +49,10 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus) {
 
 	var format = d3.format(",")
 
+	function niceNumber(num) {
+		return parseInt(num.replace(/,/g, ""))
+	}
+
 	// Country stuff, check if manual total higher than automated total
 
 	var ausManualConfirmed = parseInt(aus.sheets['latest totals'][8]['Confirmed cases (cumulative)'])
@@ -56,48 +60,82 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus) {
 	var ausAutoConfirmed = confirmed[confirmed.length-1]['Australia']
 	var ausAutoDeaths = deaths[deaths.length-1]['Australia']
 
+	var totalManualConfirmed = niceNumber(overrides.sheets['Sheet1'][0]['Cases'])
+	var totalManualDeaths = niceNumber(overrides.sheets['Sheet1'][0]['Deaths'])
+	var totalManualRecovered = niceNumber(overrides.sheets['Sheet1'][0]['Recovered'])
+
+	var totalAutoConfirmed = confirmed[confirmed.length-1]['Total']
+	var totalAutoDeaths = deaths[deaths.length-1]['Total']
+	var totalAutoRecovered = recovered[recovered.length-1]['Total']
+
+	var usManualConfirmed = niceNumber(overrides.sheets['Sheet1'][1]['Cases'])
+	var usManualDeaths = niceNumber(overrides.sheets['Sheet1'][1]['Deaths'])
+	var usManualRecovered = niceNumber(overrides.sheets['Sheet1'][1]['Recovered'])
+
+	var usAutoConfirmed = confirmed[confirmed.length-1]['US']
+	var usAutoDeaths = deaths[deaths.length-1]['US']
+	var usAutoRecovered = recovered[recovered.length-1]['US']
+
+	var ukManualConfirmed = niceNumber(overrides.sheets['Sheet1'][2]['Cases'])
+	var ukManualDeaths = niceNumber(overrides.sheets['Sheet1'][2]['Deaths'])
+	var ukManualRecovered = niceNumber(overrides.sheets['Sheet1'][2]['Recovered'])
+
+	var ukAutoConfirmed = confirmed[confirmed.length-1]['United Kingdom']
+	var ukAutoDeaths = deaths[deaths.length-1]['United Kingdom']
+	var ukAutoRecovered = recovered[recovered.length-1]['United Kingdom']
+
 	var timeFormat = d3.timeFormat('%Y-%m-%d')
 	var timeParse = d3.timeParse('%d/%m/%Y')
 	var ausManualTimestamp = aus.sheets['latest totals'][8]['Last updated']
 	var autoTimestamp = confirmed[confirmed.length-1]['index']
 
-	var ausFinalDeaths,ausFinalConfirmed
-	console.log(ausManualConfirmed,ausAutoConfirmed)
+	var ausFinalDeaths, ausFinalConfirmed, totalFinalDeaths, totalFinalConfirmed, totalFinalRecovered, usFinalDeaths, usFinalConfirmed, usFinalRecovered, ukFinalDeaths, ukFinalConfirmed, ukFinalRecovered
 
-	if (ausManualConfirmed >= ausAutoConfirmed) {
-		ausFinalConfirmed = ausManualConfirmed
+	// console.log(ausManualConfirmed,ausAutoConfirmed)
+
+	function compare(manual, auto) {
+		if (manual >= auto) {
+			return manual
+		}
+
+		else {
+			return auto
+		}
 	}
 
-	else {
-		ausFinalConfirmed = ausAutoConfirmed
-	}
+	ausFinalConfirmed = compare(ausManualConfirmed, ausAutoConfirmed)
+	ausFinalDeaths = compare(ausManualDeaths, ausAutoDeaths)
 
-	if (ausManualDeaths >= ausAutoDeaths) {
-		ausFinalDeaths = ausManualDeaths
-	}
+	totalFinalConfirmed = compare(totalManualConfirmed, totalAutoConfirmed)
+	totalFinalDeaths = compare(totalManualDeaths, totalAutoDeaths)
+	totalFinalRecovered = compare(totalManualRecovered, totalAutoRecovered)
 
-	else {
-		ausFinalDeaths = ausAutoDeaths
-	}
+	usFinalConfirmed = compare(usManualConfirmed, usAutoConfirmed)
+	usFinalDeaths = compare(usManualDeaths, usAutoDeaths)
+	usFinalRecovered = compare(usManualRecovered, usAutoRecovered)
+
+	ukFinalConfirmed = compare(ukManualConfirmed, ukAutoConfirmed)
+	ukFinalDeaths = compare(ukManualDeaths, ukAutoDeaths)
+	ukFinalRecovered = compare(ukManualRecovered, ukAutoRecovered)
 
 	data["Australia"]['confirmed'] = format(ausFinalConfirmed)
 	data["Australia"]['deaths'] = format(ausFinalDeaths)
 	data["Australia"]['recovered'] = format(recovered[recovered.length-1]['Australia'])
 
-	data["United Kingdom"]['confirmed'] = format(confirmed[confirmed.length-1]['United Kingdom'])
-	data["United Kingdom"]['deaths'] = format(deaths[deaths.length-1]['United Kingdom'])
-	data["United Kingdom"]['recovered'] = format(recovered[recovered.length-1]['United Kingdom'])
+	data["United Kingdom"]['confirmed'] = format(ukFinalConfirmed)
+	data["United Kingdom"]['deaths'] = format(ukFinalDeaths)
+	data["United Kingdom"]['recovered'] = format(ukFinalRecovered)
 
-	data["US"]['confirmed'] = format(confirmed[confirmed.length-1]['US'])
-	data["US"]['deaths'] = format(deaths[deaths.length-1]['US'])
-	data["US"]['recovered'] = format(recovered[recovered.length-1]['US'])
+	data["US"]['confirmed'] = format(usFinalConfirmed)
+	data["US"]['deaths'] = format(usFinalDeaths)
+	data["US"]['recovered'] = format(usFinalRecovered)
 
-	data["Total"]['confirmed'] = format(confirmed[confirmed.length-1]['Total'])
-	data["Total"]['deaths'] = format(deaths[deaths.length-1]['Total'])
-	data["Total"]['recovered'] = format(recovered[recovered.length-1]['Total'])
+	data["Total"]['confirmed'] = format(totalFinalConfirmed)
+	data["Total"]['deaths'] = format(totalFinalDeaths)
+	data["Total"]['recovered'] = format(totalFinalRecovered)
 
 
-	console.log(data);
+	// console.log(data);
 
 	var ractive = new Ractive({
 			target: "#outer-wrapper",
@@ -261,28 +299,31 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus) {
 
 };
 
-// Promise.all([
-// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed.json'),
-// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily.json'),
-// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths.json'),
-// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered.json'),
-// 	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json')
-// ])
-// .then((results) =>  {
-// 	init('Total', results[0], results[1], results[2], results[3], results[4])
-// })
-
-
 Promise.all([
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_preview.json'),
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily_preview.json'),
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths_preview.json'),
-	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered_preview.json'),
-	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json')
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths.json'),
+	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered.json'),
+	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json'),
+	d3.json('https://interactive.guim.co.uk/docsdata/1jy3E-hIVvbBAyUx7SY3IfUADB85mGoaR2tobYu9iifA.json')
 ])
 .then((results) =>  {
-	init('Total', results[0], results[1], results[2], results[3], results[4])
+	init('Total', results[0], results[1], results[2], results[3], results[4], results[5])
 })
+
+
+// Promise.all([
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_preview.json'),
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/confirmed_daily_preview.json'),
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths_preview.json'),
+// 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered_preview.json'),
+// 	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json'),
+// 	d3.json('https://interactive.guim.co.uk/docsdata/1jy3E-hIVvbBAyUx7SY3IfUADB85mGoaR2tobYu9iifA.json')
+	
+// ])
+// .then((results) =>  {
+// 	init('Total', results[0], results[1], results[2], results[3], results[4], results[5])
+// })
 
 // Promise.all([
 // 	d3.json('<%= path %>/assets/confirmed.json'),
