@@ -57,6 +57,11 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 
 	var ausManualConfirmed = parseInt(aus.sheets['latest totals'][8]['Confirmed cases (cumulative)'])
 	var ausManualDeaths = parseInt(aus.sheets['latest totals'][8]['Deaths'])
+
+	var ausManualConfirmed2 = parseInt(overrides.sheets['Sheet1'][3]['Cases'])
+	var ausManualDeaths2 = parseInt(overrides.sheets['Sheet1'][3]['Deaths'])
+	var ausManualRecovered2 = parseInt(overrides.sheets['Sheet1'][3]['Recovered'])
+	
 	var ausAutoConfirmed = confirmed[confirmed.length-1]['Australia']
 	var ausAutoDeaths = deaths[deaths.length-1]['Australia']
 
@@ -93,30 +98,34 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 
 	// console.log(ausManualConfirmed,ausAutoConfirmed)
 
-	function compare(manual, auto) {
-		if (manual >= auto) {
-			return manual
+	function sorter(a,b) {
+		if (a > b) {
+			return -1;
 		}
-
-		else {
-			return auto
-		}
+		if (b > a) {
+			return 1;
+		}		
+		return 0;
 	}
 
-	ausFinalConfirmed = compare(ausManualConfirmed, ausAutoConfirmed)
-	ausFinalDeaths = compare(ausManualDeaths, ausAutoDeaths)
+	function compare(things) {
+		return [].slice.call(things).sort(sorter)[0]
+	}
 
-	totalFinalConfirmed = compare(totalManualConfirmed, totalAutoConfirmed)
-	totalFinalDeaths = compare(totalManualDeaths, totalAutoDeaths)
-	totalFinalRecovered = compare(totalManualRecovered, totalAutoRecovered)
+	ausFinalConfirmed = compare([ausManualConfirmed, ausManualConfirmed2, ausAutoConfirmed])
+	ausFinalDeaths = compare([ausManualDeaths, ausManualDeaths2, ausAutoDeaths])
 
-	usFinalConfirmed = compare(usManualConfirmed, usAutoConfirmed)
-	usFinalDeaths = compare(usManualDeaths, usAutoDeaths)
-	usFinalRecovered = compare(usManualRecovered, usAutoRecovered)
+	totalFinalConfirmed = compare([totalManualConfirmed, totalAutoConfirmed])
+	totalFinalDeaths = compare([totalManualDeaths, totalAutoDeaths])
+	totalFinalRecovered = compare([totalManualRecovered, totalAutoRecovered])
 
-	ukFinalConfirmed = compare(ukManualConfirmed, ukAutoConfirmed)
-	ukFinalDeaths = compare(ukManualDeaths, ukAutoDeaths)
-	ukFinalRecovered = compare(ukManualRecovered, ukAutoRecovered)
+	usFinalConfirmed = compare([usManualConfirmed, usAutoConfirmed])
+	usFinalDeaths = compare([usManualDeaths, usAutoDeaths])
+	usFinalRecovered = compare([usManualRecovered, usAutoRecovered])
+
+	ukFinalConfirmed = compare([ukManualConfirmed, ukAutoConfirmed])
+	ukFinalDeaths = compare([ukManualDeaths, ukAutoDeaths])
+	ukFinalRecovered = compare([ukManualRecovered, ukAutoRecovered])
 
 	data["Australia"]['confirmed'] = format(ausFinalConfirmed)
 	data["Australia"]['deaths'] = format(ausFinalDeaths)
