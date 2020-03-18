@@ -192,7 +192,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 		var margin
 		var dateParse = d3.timeParse('%Y-%m-%d');
 
-		margin = {top: 0, right: 10, bottom: 20, left:40}
+		margin = {top: 10, right: 10, bottom: 20, left:40}
 		width = width - margin.left - margin.right,
     	height = height - margin.top - margin.bottom
 
