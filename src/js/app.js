@@ -2,21 +2,24 @@ import template from '../templates/template.html'
 import Ractive from 'ractive'
 import * as d3 from "d3"
 
-function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overrides) {
+function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overrides, latest) {
 
 	// console.log(confirmed)
 	// console.log(confirmed_daily)
 	// console.log(deaths)
 	// console.log(recovered)
-	// console.log(aus)
+	
+	console.log(latest);
 
+	const aus_latest = latest.filter(d => d.Country_Region == "Australia")[0]['Confirmed']
+
+	console.log(aus_latest)
 	var data = {
 		"Australia":{},
 		"United Kingdom":{},
 		"US":{},
 		"Total":{}
 	};
-
 
 	function numberFormat(num) {
         if ( num > 0 ) {
@@ -62,32 +65,32 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 	var ausManualDeaths2 = parseInt(overrides.sheets['Sheet1'][3]['Deaths'])
 	var ausManualRecovered2 = parseInt(overrides.sheets['Sheet1'][3]['Recovered'])
 	
-	var ausAutoConfirmed = confirmed[confirmed.length-1]['Australia']
-	var ausAutoDeaths = deaths[deaths.length-1]['Australia']
+	var ausAutoConfirmed = latest.filter(d => d.Country_Region == "Australia")[0]['Confirmed']
+	var ausAutoDeaths = latest.filter(d => d.Country_Region == "Australia")[0]['Deaths']
 
 	var totalManualConfirmed = niceNumber(overrides.sheets['Sheet1'][0]['Cases'])
 	var totalManualDeaths = niceNumber(overrides.sheets['Sheet1'][0]['Deaths'])
 	var totalManualRecovered = niceNumber(overrides.sheets['Sheet1'][0]['Recovered'])
 
-	var totalAutoConfirmed = confirmed[confirmed.length-1]['Total']
-	var totalAutoDeaths = deaths[deaths.length-1]['Total']
-	var totalAutoRecovered = recovered[recovered.length-1]['Total']
+	var totalAutoConfirmed = latest.filter(d => d.Country_Region == "Total")[0]['Confirmed']
+	var totalAutoDeaths = latest.filter(d => d.Country_Region == "Total")[0]['Deaths']
+	var totalAutoRecovered = latest.filter(d => d.Country_Region == "Total")[0]['Recovered']
 
 	var usManualConfirmed = niceNumber(overrides.sheets['Sheet1'][1]['Cases'])
 	var usManualDeaths = niceNumber(overrides.sheets['Sheet1'][1]['Deaths'])
 	var usManualRecovered = niceNumber(overrides.sheets['Sheet1'][1]['Recovered'])
 
-	var usAutoConfirmed = confirmed[confirmed.length-1]['US']
-	var usAutoDeaths = deaths[deaths.length-1]['US']
-	var usAutoRecovered = recovered[recovered.length-1]['US']
+	var usAutoConfirmed = latest.filter(d => d.Country_Region == "US")[0]['Confirmed']
+	var usAutoDeaths = latest.filter(d => d.Country_Region == "US")[0]['Deaths']
+	var usAutoRecovered = latest.filter(d => d.Country_Region == "US")[0]['Recovered']
 
 	var ukManualConfirmed = niceNumber(overrides.sheets['Sheet1'][2]['Cases'])
 	var ukManualDeaths = niceNumber(overrides.sheets['Sheet1'][2]['Deaths'])
 	var ukManualRecovered = niceNumber(overrides.sheets['Sheet1'][2]['Recovered'])
 
-	var ukAutoConfirmed = confirmed[confirmed.length-1]['United Kingdom']
-	var ukAutoDeaths = deaths[deaths.length-1]['United Kingdom']
-	var ukAutoRecovered = recovered[recovered.length-1]['United Kingdom']
+	var ukAutoConfirmed = latest.filter(d => d.Country_Region == 'United Kingdom')[0]['Confirmed']
+	var ukAutoDeaths = latest.filter(d => d.Country_Region == 'United Kingdom')[0]['Deaths']
+	var ukAutoRecovered = latest.filter(d => d.Country_Region == 'United Kingdom')[0]['Recovered']
 
 	var timeFormat = d3.timeFormat('%Y-%m-%d')
 	var timeParse = d3.timeParse('%d/%m/%Y')
@@ -145,7 +148,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 
 
 	// console.log(data);
-
+	Ractive.DEBUG = false;
 	var ractive = new Ractive({
 			target: "#outer-wrapper",
 			template: template,
@@ -314,10 +317,11 @@ Promise.all([
 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/deaths.json'),
 	d3.json('https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/recovered.json'),
 	d3.json('https://interactive.guim.co.uk/docsdata/1q5gdePANXci8enuiS4oHUJxcxC13d6bjMRSicakychE.json'),
-	d3.json('https://interactive.guim.co.uk/docsdata/1jy3E-hIVvbBAyUx7SY3IfUADB85mGoaR2tobYu9iifA.json')
+	d3.json('https://interactive.guim.co.uk/docsdata/1jy3E-hIVvbBAyUx7SY3IfUADB85mGoaR2tobYu9iifA.json'),
+	d3.json("https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/latest.json")
 ])
 .then((results) =>  {
-	init('Total', results[0], results[1], results[2], results[3], results[4], results[5])
+	init('Total', results[0], results[1], results[2], results[3], results[4], results[5], results[6])
 })
 
 
