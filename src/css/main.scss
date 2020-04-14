@@ -1,7 +1,7 @@
 @import "mq";
 @import "fonts";
 @import "palette";
-@import "embed";
+/*@import "embed";*/
 
 .element-atom,
 .interactive-atom {
@@ -56,7 +56,7 @@
 
 	.numWrapper {
 		padding: 6px 0 6px 6px;
-    	width: 33%;
+    	width: 50%;
     	border-bottom: 1px solid #dcdcdc;
     	border-right: 1px solid #dcdcdc;
 
@@ -82,7 +82,7 @@
 		}
 
 		.numWrapper {
-			 width: calc(100% - 20.5px);
+			width: 100%;
     		border-right: none;
 		}
 	}

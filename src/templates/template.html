@@ -1,14 +1,14 @@
 
 
 <div class="row buttons">
-	<div class="btn btn-selected world" on-click="world">World</div>
+	<div class="btn btn-selected aus" on-click="aus">Aus</div>
+	<div class="btn world" on-click="world">World</div>
 	<div class="btn us" on-click="us">US</div>
 	<div class="btn uk" on-click="uk">UK</div>
-	<div class="btn aus" on-click="aus">Aus</div>
 </div>	
 
 <div class="headline-container">
-	<h3>Coronavirus latest totals</h3>
+	<h3>Coronavirus latest totals for: {{location.name}}</h3>
 </div>	
 
 <div class="row bigNumbers">
@@ -20,21 +20,12 @@
 		<p>Deaths</p>
 		<span>{{location.deaths}}</span>
 	</div>
-	<div id="recovered" class="numWrapper">
+<!-- 	<div id="recovered" class="numWrapper">
 		<p style="color: #005689;">Recovered</p>
 		<span style="color: #005689;">{{location.recovered}}</span>
-	</div>
+	</div> -->
 </div>
 
-<div class="row casesOverTime">
-
-	<div class="headline-container">
-		<h3>Confirmed cases per day</h3>
-	</div>	
-	<div class='subTitle' id="subTitle"></div>
-	<div id="barChart" class="chartSans"></div>	
-</div>	
-
 <div class="row notes">
-Sources: cumulative and daily figures are from <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins University</a>. For Australia, more up-to-date figures from state and territory health departments are used for the totals, but not for the chart. Australian data last updated {{ausManualTimestamp}}, Johns Hopkins University data last updated {{autoTimestamp}}
+Sources: cumulative and daily figures are from <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins University</a>. For Australia, more up-to-date figures from state and territory health departments are used for the totals, but not for the chart. Australian data last updated {{ausManualTimestamp}}, Johns Hopkins University data last updated {{autoTimestamp}}. Recovered cases removed due to unreliable data
 </div>	

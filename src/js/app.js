@@ -15,10 +15,10 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 
 	console.log(aus_latest)
 	var data = {
-		"Australia":{},
-		"United Kingdom":{},
-		"US":{},
-		"Total":{}
+		"Australia":{"name":"Australia"},
+		"United Kingdom":{"name":"United Kingdom"},
+		"US":{"name":"US"},
+		"Total":{"name":"World"}
 	};
 
 	function numberFormat(num) {
@@ -65,8 +65,8 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 	var ausManualDeaths2 = parseInt(overrides.sheets['Sheet1'][3]['Deaths'])
 	var ausManualRecovered2 = parseInt(overrides.sheets['Sheet1'][3]['Recovered'])
 	
-	var ausAutoConfirmed = latest.filter(d => d.Country_Region == "Australia")[0]['Confirmed']
-	var ausAutoDeaths = latest.filter(d => d.Country_Region == "Australia")[0]['Deaths']
+	// var ausAutoConfirmed = latest.filter(d => d.Country_Region == "Australia")[0]['Confirmed']
+	// var ausAutoDeaths = latest.filter(d => d.Country_Region == "Australia")[0]['Deaths']
 
 	var totalManualConfirmed = niceNumber(overrides.sheets['Sheet1'][0]['Cases'])
 	var totalManualDeaths = niceNumber(overrides.sheets['Sheet1'][0]['Deaths'])
@@ -115,8 +115,8 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 		return [].slice.call(things).sort(sorter)[0]
 	}
 
-	ausFinalConfirmed = compare([ausManualConfirmed, ausManualConfirmed2, ausAutoConfirmed])
-	ausFinalDeaths = compare([ausManualDeaths, ausManualDeaths2, ausAutoDeaths])
+	ausFinalConfirmed = compare([ausManualConfirmed, ausManualConfirmed2])
+	ausFinalDeaths = compare([ausManualDeaths, ausManualDeaths2])
 
 	totalFinalConfirmed = compare([totalManualConfirmed, totalAutoConfirmed])
 	totalFinalDeaths = compare([totalManualDeaths, totalAutoDeaths])
@@ -153,7 +153,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 			target: "#outer-wrapper",
 			template: template,
 			data: { 
-					location:data["Total"],
+					location:data[country],
 					ausManualTimestamp:ausManualTimestamp,
 					autoTimestamp:autoTimestamp
 				}
@@ -166,7 +166,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 			country = 'Total'
 			d3.selectAll(".btn").classed("btn-selected", false);
 			d3.select(".world").classed("btn-selected", true);
-			drawChart(confirmed_daily, country);
+
 		},
 		us: function ( event ) {
 			console.log("us")
@@ -174,7 +174,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 			country = 'US'
 			d3.selectAll(".btn").classed("btn-selected", false);
 			d3.select(".us").classed("btn-selected", true);
-			drawChart(confirmed_daily, country);
+
 		},
 		uk: function ( event ) {
 			console.log("uk")
@@ -182,7 +182,7 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 			country = 'United Kingdom'
 			d3.selectAll(".btn").classed("btn-selected", false);
 			d3.select(".uk").classed("btn-selected", true);
-			drawChart(confirmed_daily, country);
+
 		},
 		aus: function ( event ) {
 			console.log("aus")
@@ -190,124 +190,12 @@ function init(country, confirmed, confirmed_daily, deaths, recovered, aus, overr
 			country = 'Australia'
 			d3.selectAll(".btn").classed("btn-selected", false);
 			d3.select(".aus").classed("btn-selected", true);
-			drawChart(confirmed_daily, country);
+
 		}
 	});
 
 	// ractive.set('data', self.pagerank);
 
-	function drawChart(data, country) {
-
-		// var yFormat = d3.format(".2s")
-		var width = document.querySelector("#barChart").getBoundingClientRect().width
-		var height = 200			
-		var margin
-		var dateParse = d3.timeParse('%Y-%m-%d');
-
-		margin = {top: 10, right: 10, bottom: 20, left:40}
-		width = width - margin.left - margin.right,
-    	height = height - margin.top - margin.bottom
-
-    	d3.select("#barChart svg").remove();
-
-    	var barChart = d3.select("#barChart").append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
-				.attr("id", "barChartSvg")
-				.attr("overflow", "hidden")					
-
-		var features = barChart.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
-		data.forEach(function(d) {
-			if (typeof d[country] == 'string') {
-				d[country] = +d[country];
-			}
-		
-			if (typeof d.index == 'string') {
-				d.index = dateParse(d.index);
-			}
-			
-
-		})
-
-		// var keys = Object.keys(data[0])
-		// keys.splice(0, 1);
-		var x = d3.scaleBand().range([0, width]).paddingInner(0.08);
-    	var y = d3.scaleLinear().range([height, 0]);
-
-		
-		x.domain(data.map(function(d) { return d.index; }))
-
-		y.domain(d3.extent(data, function(d) { return d[country]; }))
-		
-
-		var xAxis;
-		var yAxis;
-
-		var ticks = x.domain().filter(function(d,i){ return !(i%10); } );
-
-		if (isMobile) {
-			ticks = x.domain().filter(function(d,i){ return !(i%20); } );
-		}	
-
-		if (isMobile) {
-			xAxis = d3.axisBottom(x).tickValues(ticks).tickFormat(d3.timeFormat("%b %d"))
-			yAxis = d3.axisLeft(y).tickFormat(function (d) { return numberFormat(d)}).ticks(5).tickSize(-width)
-		}
-
-		else {
-			xAxis = d3.axisBottom(x).tickValues(ticks).tickFormat(d3.timeFormat("%b %d"))
-			yAxis = d3.axisLeft(y).tickFormat(function (d) { return numberFormat(d)}).ticks(5).tickSize(-width)
-		}
-
-		// function make_y_gridlines() {		
-		//     return d3.axisLeft(y)
-		//         .ticks(5)
-		// }
-
-		features.append("g")
-				.attr("class","x")
-				.attr("transform", "translate(0," + height + ")")
-				.call(xAxis);
-
-		features.append("g")
-			.attr("class","y grid")
-			.call(yAxis)
-
-		features.selectAll(".bar")
-	    	.data(data)
-			    .enter().append("rect")
-				.attr("class", "bar")
-				.attr("x", function(d) { return x(d.index) })
-				.style("fill", function(d) {
-						return "rgb(204, 10, 17)"
-				})
-				.attr("y", function(d) { 
-					return y(Math.max(d[country], 0))
-					// return y(d[keys[0]]) 
-				})
-				.attr("width", x.bandwidth())
-				.attr("height", function(d) { 
-					return Math.abs(y(d[country]) - y(0))
-				});
-
-	}
-
-	drawChart(confirmed_daily, country);
-
-	var to=null
-	var lastWidth = document.querySelector("#barChart").getBoundingClientRect()
-
-	window.addEventListener('resize', function() {
-		var thisWidth = document.querySelector("#barChart").getBoundingClientRect()
-		if (lastWidth != thisWidth) {
-			window.clearTimeout(to);
-			to = window.setTimeout(function() {
-				    drawChart(confirmed_daily, country);
-				}, 100)
-		}
-	
-	})
 
 };
 
@@ -321,7 +209,7 @@ Promise.all([
 	d3.json("https://interactive.guim.co.uk/2020/03/coronavirus-widget-data/latest.json")
 ])
 .then((results) =>  {
-	init('Total', results[0], results[1], results[2], results[3], results[4], results[5], results[6])
+	init('Australia', results[0], results[1], results[2], results[3], results[4], results[5], results[6])
 })
 
 
