@@ -11,21 +11,27 @@
 	<h3>Coronavirus latest totals for: {{location.name}}</h3>
 </div>	
 
-<div class="row bigNumbers">
+<div class="row bigNumbers {{layout}}">
 	<div id="cases" class="numWrapper">
-		<p style="color: rgb(199, 0, 0);">Confirmed cases</p>
+		<p style="color: rgb(199, 0, 0);">{{label}}</p>
 		<span style="color: rgb(199, 0, 0);">{{location.confirmed}}</span>
 	</div>
+
+	{{#if location.name == "Australia"}}
+	<div id="recovered" class="numWrapper">
+		<p style="color: #005689;">Recovered**</p>
+		<span style="color: #005689;">{{location.recovered}}</span>
+	</div>
+	{{/if}}
+
 	<div id="deaths" class="numWrapper">
 		<p>Deaths</p>
 		<span>{{location.deaths}}</span>
 	</div>
-<!-- 	<div id="recovered" class="numWrapper">
-		<p style="color: #005689;">Recovered</p>
-		<span style="color: #005689;">{{location.recovered}}</span>
-	</div> -->
+
+
 </div>
 
 <div class="row notes">
-Sources: cumulative and daily figures are from <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins University</a>. For Australia, more up-to-date figures from state and territory health departments are used for the totals, but not for the chart. Australian data last updated {{ausManualTimestamp}}, Johns Hopkins University data last updated {{autoTimestamp}}. Recovered cases removed due to unreliable data
+Australian figures are sourced by Guardian Australia from state and territory media releases. *Active cases is the total number of cases with recovered cases and deaths subtracted. **The NSW recovered cases figure has been estimated by the federal Department of Health, and is updated irregularly. Global figures are from <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins University</a>. Australian data last updated {{ausManualTimestamp}}, Johns Hopkins University data last updated {{autoTimestamp}}
 </div>	

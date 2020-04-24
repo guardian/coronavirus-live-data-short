@@ -54,9 +54,17 @@
     	border-top: 2px solid #c70000;
 	}
 
+
+	.two .numWrapper {
+		width: 50%;
+	}
+
+	.three .numWrapper {
+		width: 33%;
+	}
+
 	.numWrapper {
 		padding: 6px 0 6px 6px;
-    	width: 50%;
     	border-bottom: 1px solid #dcdcdc;
     	border-right: 1px solid #dcdcdc;
 
@@ -81,7 +89,7 @@
     		border-top: none;
 		}
 
-		.numWrapper {
+		.two .numWrapper, .three .numWrapper {
 			width: 100%;
     		border-right: none;
 		}
